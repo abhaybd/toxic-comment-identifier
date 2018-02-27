@@ -18,7 +18,7 @@ X = [comment.rjust(max_len) if len(comment) <= max_len else comment[:max_len] fo
 print('Formatted x data!')
 
 # Extract output data
-y = np.array(train_set.iloc[:,2:])
+y = np.array(train_set.iloc[:,2:], dtype=np.float32)
 print('Extracted y data!')
 
 # Create a set of unique characters in input data
@@ -38,6 +38,10 @@ print('Created char mappings!')
 
 # Split into train/test sets
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3,random_state=42)
+np.save('x_train.npy',X_train)
+np.save('x_test.npy',X_test)
+np.save('y_train.npy',y_train)
+np.save('y_test.npy',y_test)
 print('Created train/test split!')
 
 # Encode a letter into a vector
