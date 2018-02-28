@@ -1,48 +1,24 @@
-import pandas as pd
-from sklearn.externals import joblib
-from sklearn.utils import shuffle
-from sklearn.model_selection import train_test_split
 import numpy as np
+from numpy import random
+from sklearn.externals import joblib
+import os
+import dataset
 
-train_set = pd.read_csv('data/train.csv')
-train_set = shuffle(train_set, random_state=42)
-
-# Load data from disk and sanitize strings
-import re
-X = train_set.iloc[:,1]
-X = [re.sub(r'\s+',' ',comment.strip().lower()) for comment in X]
-X = [re.sub(r'[^\sa-zA-Z]','',comment) for comment in X]
+CREATE_NEW_DATA = False
 
 max_len = 1000
-X = [comment.rjust(max_len) if len(comment) <= max_len else comment[:max_len] for comment in X]
-print('Formatted x data!')
 
-# Extract output data
-y = np.array(train_set.iloc[:,2:], dtype=np.float32)
-print('Extracted y data!')
-
-# Create a set of unique characters in input data
-import os
-if(os.path.isfile('char_mapping.sav')):
-    char_mapping = joblib.load('char_mapping.sav')
+if CREATE_NEW_DATA:
+    X_train, X_test, y_train, y_test, char_mapping = dataset.format_data('data/train.csv', max_len)
 else:
-    letters = set()
-    for comment in X:
-        for letter in comment:
-            letters.add(letter)
-    letters = sorted(list(letters))
-    char_mapping = {letters[i]:i for i in range(len(letters))}
-    joblib.dump(char_mapping,'char_mapping.sav')
-del os
-print('Created char mappings!')
-
-# Split into train/test sets
-X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3,random_state=42)
-np.save('x_train.npy',X_train)
-np.save('x_test.npy',X_test)
-np.save('y_train.npy',y_train)
-np.save('y_test.npy',y_test)
-print('Created train/test split!')
+    try:
+        X_train = np.load('formatted_data/x_train.npy')
+        X_test = np.load('formatted_data/x_test.npy')
+        y_train = np.load('formatted_data/y_train.npy')
+        y_test = np.load('formatted_data/y_test.npy')
+        char_mapping = joblib.load('char_mapping.sav')
+    except:
+        X_train, X_test, y_train, y_test, char_mapping = dataset.format_data('data/train.csv', max_len)
 
 # Encode a letter into a vector
 def encode(char_mapping, letter):
@@ -58,13 +34,13 @@ def generator(batch_size, X, y, char_mapping, fn_encode):
     y_batch = np.empty((batch_size,len(y[0])),dtype=np.float32)
     while True:
         for i in range(batch_size):
-            index = np.random.randint(len(X))
+            index = random.randint(len(X))
             encoded = np.array([fn_encode(char_mapping,letter)[:-1] for letter in X[index]],dtype=np.float32)
             x_batch[i] = encoded
             y_batch[i] = y[index]
         yield x_batch, y_batch
 
-output_size = len(y[0])
+output_size = len(y_train[0])
 
 # Create the model
 from keras.models import Sequential
