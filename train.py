@@ -52,11 +52,8 @@ model.add(Dense(units=output_size, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='rmsprop')
 
 print('Built model!')
-
-import os
 if not os.path.isdir('checkpoints'):
     os.mkdir('checkpoints')
-del os
 from keras.callbacks import ModelCheckpoint
 filepath = 'checkpoints/weights-improvement-{epoch:02d}-{loss:.4f}.h5'
 checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=0, save_best_only=True, mode='min')
