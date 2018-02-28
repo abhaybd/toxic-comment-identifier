@@ -6,7 +6,7 @@ import numpy as np
 X = np.load('formatted_data/x_test.npy')
 y_true = np.load('formatted_data/y_test.npy')
 
-model_path = 'checkpoints/weights-improvement-11-0.0538.h5'
+model_path = 'model2.h5'
 
 model = load_model(model_path)
 char_mapping = joblib.load('char_mapping.sav')
