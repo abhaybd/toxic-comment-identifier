@@ -3,8 +3,8 @@ from sklearn.externals import joblib
 from sklearn.metrics import confusion_matrix
 import numpy as np
 
-X = np.load('x_test.npy')
-y_true = np.load('y_test.npy')
+X = np.load('formatted_data/x_test.npy')
+y_true = np.load('formatted_data/y_test.npy')
 
 model_path = 'checkpoints/weights-improvement-11-0.0538.h5'
 

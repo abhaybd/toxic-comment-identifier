@@ -7,7 +7,9 @@ import dataset
 CREATE_NEW_DATA = False
 
 if CREATE_NEW_DATA:
+    print('Creating data...')
     X_train, X_test, y_train, y_test, char_mapping = dataset.format_data('data/train.csv')
+    print('Created data!')
 else:
     try:
         X_train = np.load('formatted_data/x_train.npy')
@@ -15,7 +17,9 @@ else:
         y_train = np.load('formatted_data/y_train.npy')
         y_test = np.load('formatted_data/y_test.npy')
         char_mapping = joblib.load('char_mapping.sav')
+        print('Loaded data!')
     except:
+        print('Failed to load data, creating new data.')
         X_train, X_test, y_train, y_test, char_mapping = dataset.format_data('data/train.csv')
 
 # Encode a letter into a vector
@@ -49,15 +53,17 @@ model.add(LSTM(units=300, input_shape=(max_len,len(char_mapping)-1)))
 model.add(Dropout(0.2))
 model.add(Dense(units=output_size, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='rmsprop')
-
 print('Built model!')
+
 if not os.path.isdir('checkpoints'):
     os.mkdir('checkpoints')
-from keras.callbacks import ModelCheckpoint, EarlyStopping
+    
+from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
 filepath = 'checkpoints/weights-improvement-{epoch:02d}-{loss:.4f}.h5'
 checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=0, save_best_only=True, mode='min')
 early_stopping = EarlyStopping(monitor='val_loss')
-callbacks_list = [checkpoint, early_stopping]
+tensorboard = TensorBoard(log_dir='/Graph', histogram_freq=0, write_graph=True, write_images=True)
+callbacks_list = [checkpoint, early_stopping, tensorboard]
 
 batch_size = 128
 model.fit_generator(generator=generator(batch_size,X_train,y_train,char_mapping,encode),
