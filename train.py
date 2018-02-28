@@ -6,10 +6,8 @@ import dataset
 
 CREATE_NEW_DATA = False
 
-max_len = 1000
-
 if CREATE_NEW_DATA:
-    X_train, X_test, y_train, y_test, char_mapping = dataset.format_data('data/train.csv', max_len)
+    X_train, X_test, y_train, y_test, char_mapping = dataset.format_data('data/train.csv')
 else:
     try:
         X_train = np.load('formatted_data/x_train.npy')
@@ -18,7 +16,7 @@ else:
         y_test = np.load('formatted_data/y_test.npy')
         char_mapping = joblib.load('char_mapping.sav')
     except:
-        X_train, X_test, y_train, y_test, char_mapping = dataset.format_data('data/train.csv', max_len)
+        X_train, X_test, y_train, y_test, char_mapping = dataset.format_data('data/train.csv')
 
 # Encode a letter into a vector
 def encode(char_mapping, letter):
@@ -41,6 +39,7 @@ def generator(batch_size, X, y, char_mapping, fn_encode):
         yield x_batch, y_batch
 
 output_size = len(y_train[0])
+max_len = len(X_train[0])
 
 # Create the model
 from keras.models import Sequential
