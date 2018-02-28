@@ -12,8 +12,8 @@ def _debug(s):
     if DEBUG:
         print(s)
 
-def format_data(path, max_len=1000):
-    train_set = pd.read_csv('data/train.csv')
+def format_data(path, max_len=1000, test_size=0.3):
+    train_set = pd.read_csv(path)
     train_set = shuffle(train_set, random_state=42)
     
     # Load data from disk and sanitize strings
@@ -40,7 +40,7 @@ def format_data(path, max_len=1000):
     _debug('Created char mappings!')
     
     # Split into train/test sets
-    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3,random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=test_size,random_state=42)
     
     # Create data folder if not present and save full data
     if not os.path.isdir('formatted_data'):

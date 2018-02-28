@@ -53,10 +53,11 @@ model.compile(loss='binary_crossentropy', optimizer='rmsprop')
 print('Built model!')
 if not os.path.isdir('checkpoints'):
     os.mkdir('checkpoints')
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 filepath = 'checkpoints/weights-improvement-{epoch:02d}-{loss:.4f}.h5'
 checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=0, save_best_only=True, mode='min')
-callbacks_list = [checkpoint]
+early_stopping = EarlyStopping(monitor='val_loss')
+callbacks_list = [checkpoint, early_stopping]
 
 batch_size = 128
 model.fit_generator(generator=generator(batch_size,X_train,y_train,char_mapping,encode),
