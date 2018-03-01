@@ -4,7 +4,7 @@ from sklearn.externals import joblib
 import os
 import dataset
 
-CREATE_NEW_DATA = False
+CREATE_NEW_DATA = True
 
 if CREATE_NEW_DATA:
     print('Creating data...')
@@ -61,8 +61,8 @@ if not os.path.isdir('checkpoints'):
 from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
 filepath = 'checkpoints/weights-improvement-{epoch:02d}-{loss:.4f}.h5'
 checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=0, save_best_only=True, mode='min')
-early_stopping = EarlyStopping(monitor='val_loss')
-tensorboard = TensorBoard(log_dir='/Graph', histogram_freq=0, write_graph=True, write_images=True)
+early_stopping = EarlyStopping(monitor='val_loss', patience=1)
+tensorboard = TensorBoard(log_dir='tensorboard_graph', histogram_freq=0, write_graph=True, write_images=True)
 callbacks_list = [checkpoint, early_stopping, tensorboard]
 
 batch_size = 128

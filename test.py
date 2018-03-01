@@ -6,7 +6,7 @@ import numpy as np
 X = np.load('formatted_data/x_test.npy')
 y_true = np.load('formatted_data/y_test.npy')
 
-model_path = 'model2.h5'
+model_path = 'model.h5'
 
 model = load_model(model_path)
 char_mapping = joblib.load('char_mapping.sav')
@@ -39,7 +39,7 @@ y_forced = np.reshape([round(x) for x in y_pred.flatten()],y_pred.shape)
 
 overall_confusion_matrix = confusion_matrix(y_true.flatten(), y_forced.flatten())
 confusion_matrices = [confusion_matrix(y_true[:,i], y_forced[:,i]) for i in range(y_true.shape[1])]
-joblib.dump(overall_confusion_matrix,'cm.sav')
+joblib.dump(overall_confusion_matrix,'cm2.sav')
 
 tp,fp,fn,tn = overall_confusion_matrix.flatten()
 
